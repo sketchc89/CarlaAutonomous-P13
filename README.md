@@ -3,39 +3,47 @@ The purpose of this project is to drive Carla, an autonomous vehicle around a tr
 ### Docker Installation
 [Install Docker](https://docs.docker.com/engine/installation/)
 
-Build the docker container
-```bash
-docker build . -t capstone
-```
-
-Run the docker file
-```bash
-docker run -p 4567:4567 -v $PWD:/capstone -v /tmp/log:/root/.ros/ --rm -it capstone
-```
-
-Start additional docker containers.
-```bash
-docker container ls
-docker exec -it CONTAINER-ID-HERE bash
-```
-
 ### Usage
 
 1. Clone the project repository
 ```bash
-git clone https://github.com/udacity/CarND-Capstone.git
+git clone https://github.com/sketchc89/CarlaAutonomous-P13.git ~/projects/CarlaAutonomous-P13
 ```
 
-2. Install python dependencies
+2. Build the docker container
 ```bash
-cd CarND-Capstone
+docker build . -t capstone
+```
+
+3. Run the docker file
+```bash
+docker run -p 4567:4567 \
+  --mount type=bind,source=$HOME,target=/capstone \
+  --mount type=bind,source=/tmp/log,target=/root/.ros/ \
+  --mount type=bind,source=$/projects/CarlaAutonomous-P13,target=/capstone/ros/CarlaAutonomous-P13
+  --rm -it \
+  capstone
+```
+
+4. Install python dependencies
+```bash
+cd CarlaAutonomous-P13
 pip install -r requirements.txt
 ```
-3. Make and run styx
+
+5. Make and run styx
 ```bash
 cd ros
 catkin_make
 source devel/setup.sh
 roslaunch launch/styx.launch
 ```
+
 4. Run the simulator
+
+Tips for using docker/ros: 
+* Start additional shells connected to docker container.
+```bash
+docker container ls
+docker exec -it CONTAINER-ID-HERE bash
+```
