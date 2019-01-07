@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+import numpy as np
 import rospy
 from geometry_msgs.msg import PoseStamped
 from styx_msgs.msg import Lane, Waypoint
+from scipy.spatial import KDTree
 
 import math
 
@@ -30,21 +32,53 @@ class WaypointUpdater(object):
 
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        rospy.Subscriber('/traffic_waypoint', TrafficLight, self.traffic_cb)
+        rospy.Subscriber('/obstacle_waypoint', Obstacles, self.obstacle_cb)
 
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
 
 
+        self.loop()
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
 
         # TODO: Add other member variables you need below
 
         rospy.spin()
 
+    def loop(self):
+        rate = rospy.Rate(50)
+        while not rospy.is_shutdown():
+          if self.pose and self.base_waypoints:
+            closest_waypoint_idx = self.get_closest_waypoint_idx()
+            self.publish_waypoints(closest_waypoint_idx)
+          rate.sleep()
+
+    def get_close_waypoint_idx(self):
+      x = self.pose.pose.position.x
+      y = self.pose.pose.position.y
+      closest_idx = self.waypoint_tree.query([x,y], 1)[1]
+      closest_coord = self.waypoints_2d[closest_idx]
+      prev_coord = self.waypoints_2d[closest_idx-1]
+
+      closest_vect = np.array(closest_coord)
+      prev_vect = np.array(prev_coord)
+      pos_vect = np.array([x,y])
+
+      val = np.dot(closest_vect - prev_vect, pos_vect - closest_vect)
+      if val > 0:
+        closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
+      return closest_idx
+
     def pose_cb(self, msg):
+        self.pose = msg
         # TODO: Implement
         pass
 
     def waypoints_cb(self, waypoints):
+        self.base_waypoints = waypoints
+        if not self.waypoints_2d:
+          self.waypoints_2d = [[self.waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoint]
+          self.waypoint_tree = KDTree(self.waypoints_2d)
         # TODO: Implement
         pass
 
