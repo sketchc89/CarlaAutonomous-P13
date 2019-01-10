@@ -14,6 +14,8 @@ class Controller(object):
         throttle = 0.0
         brake = 0.0
         steer = 0.0
+        if not dbw_enabled:
+            return throttle, brake, steer
         
         if current_velocity == 0:
             throttle = 0.0
