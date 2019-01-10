@@ -8,7 +8,18 @@ class Controller(object):
         # TODO: Implement
         pass
 
-    def control(self, *args, **kwargs):
-        # TODO: Change the arg, kwarg list to suit your needs
+    def control(self, current_velocity, linear_velocity, angular_velocity,
+                dbw_enabled):
         # Return throttle, brake, steer
-        return 1., 0., 0.
+        throttle = 0.0
+        brake = 0.0
+        steer = 0.0
+        
+        if current_velocity == 0:
+            throttle = 0.0
+            brake = 700.0
+        else:
+            throttle = 1.0
+            brake = 0.0
+
+        return throttle, brake, steer
