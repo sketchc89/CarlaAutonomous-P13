@@ -17,29 +17,24 @@ docker build . -t capstone
 
 3. Run the docker file
 ```bash
-docker run -p 4567:4567 \
+mkdir -p ~/tmp/log
+docker run -p 4567:4567 -p 11311:11311 \
   --mount type=bind,source=$HOME,target=/capstone \
-  --mount type=bind,source=/tmp/log,target=/root/.ros/ \
-  --mount type=bind,source=$/projects/CarlaAutonomous-P13,target=/capstone/ros/CarlaAutonomous-P13
+  --mount type=bind,source=$HOME/tmp/log,target=/root/.ros/ \
+  --mount type=bind,source=$HOME/projects/CarlaAutonomous-P13,target=/capstone/ros/CarlaAutonomous-P13
   --rm -it \
   capstone
 ```
 
-4. Install python dependencies
+4. Make and run styx
 ```bash
-cd CarlaAutonomous-P13
-pip install -r requirements.txt
-```
-
-5. Make and run styx
-```bash
-cd ros
+cd CarlaAutonomous-P13/ros
 catkin_make
 source devel/setup.sh
 roslaunch launch/styx.launch
 ```
 
-4. Run the simulator
+5. Run the simulator
 
 Tips for using docker/ros: 
 * Start additional shells connected to docker container.
