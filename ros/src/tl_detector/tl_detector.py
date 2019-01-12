@@ -14,6 +14,7 @@ import yaml
 
 STATE_COUNT_THRESHOLD = 3
 
+
 class TLDetector(object):
     def __init__(self):
         rospy.init_node('tl_detector')
@@ -34,13 +35,15 @@ class TLDetector(object):
         simulator. When testing on the vehicle, the color state will not be available. You'll need to
         rely on the position of the light and the camera image to predict it.
         '''
-        rospy.Subscriber('/vehicle/traffic_lights', TrafficLightArray, self.traffic_cb)
+        rospy.Subscriber('/vehicle/traffic_lights',
+                         TrafficLightArray, self.traffic_cb)
         rospy.Subscriber('/image_color', Image, self.image_cb)
 
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
 
-        self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
+        self.upcoming_red_light_pub = rospy.Publisher(
+            '/traffic_waypoint', Int32, queue_size=1)
 
         # self.bridge = CvBridge()
         # self.light_classifier = TLClassifier()
@@ -98,9 +101,9 @@ class TLDetector(object):
         self.base_waypoints = waypoints
         if not self.waypoints_2d:
           self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y]
-                                for waypoint in waypoints.waypoints]
+                               for waypoint in waypoints.waypoints]
           self.waypoint_tree = KDTree(self.waypoints_2d)
-    
+
     def get_closest_waypoint(self, x, y):
         """Identifies the closest path waypoint to the given position
             https://en.wikipedia.org/wiki/Closest_pair_of_points_problem
@@ -124,7 +127,7 @@ class TLDetector(object):
 
         """
         return light.state
-        
+
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
             location and color
@@ -151,12 +154,12 @@ class TLDetector(object):
                     closest_light = light
                     line_wp_idx = temp_wp_idx
 
-
         if closest_light:
             state = self.get_light_state(light)
             return line_wp_idx, state
 
         return -1, TrafficLight.UNKNOWN
+
 
 if __name__ == '__main__':
     try:
