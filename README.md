@@ -34,7 +34,7 @@ source devel/setup.sh
 roslaunch launch/styx.launch
 ```
 
-5. Run the simulator
+5. Run the simulator, check camera, and uncheck manual
 
 Tips for using docker/ros: 
 * Start additional shells connected to docker container.
